@@ -50,6 +50,19 @@ Follow these steps to deploy Kubernetes on Talos Linux using Omni and Oxide:
 
 5. Now you can log into the Omni landing page and create your cluster; [this documentation](https://omni.siderolabs.com/tutorials/getting_started#create-cluster) provides an excellent walk through.
 
+## Screenshots
+Oxide instance display.
+![oxz-instances.png](images/oxz-instances.png)
+
+Omni cluster dashboard.
+![omni-dash.png](images/omni-dash.png)
+
+Kubectl cluster nodes.
+![Kubectl-nodes.png](images/Kubectl-nodes.png)
+
+K9s TUI accessing cluster.
+![k9s.png](images/k9s.png)
+
 
 ## Cleaning Up
 1. Destroy the cluster in the Omni landing page; this will take around 5 minutes.
