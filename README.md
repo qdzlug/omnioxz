@@ -34,13 +34,13 @@ Follow these steps to deploy Kubernetes on Talos Linux using Omni and Oxide:
    cd <repository-directory>
    ```
 
-2. Configure your Oxide and Sidero Omni credentials as environment variables:
+2. Configure your Oxide credentials as environment variables:
    ```bash
    export OXIDE_API_TOKEN=<your-oxide-api-token>
    export OMNI_API_TOKEN=<your-omni-api-token>
    ```
 
-3. Edit the `variables.tf` file to match your deployment needs, such as instance count and resource names.
+3. Copy the `example-variabls.tf` file to `variables.tf` and adjust to match your deployment needs, such as instance count and resource names.
 
 4. Run Terraform to set up the Oxide resources:
    ```bash
