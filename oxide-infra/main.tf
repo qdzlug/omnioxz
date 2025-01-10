@@ -182,9 +182,44 @@ resource "oxide_vpc_firewall_rules" "load_balancer" {
 }
 
 
+resource "local_file" "hosts_ini" {
+  filename = "${path.module}/hosts.ini"
+  content  = templatefile("${path.module}/hosts.ini.tpl", {
+    loadbalancer_ip   = data.oxide_instance_external_ips.load_balancer.external_ips[0].ip,
+    control_plane_ips = [
+      for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip
+      if tonumber(key) < 3
+    ],
+    worker_ips = [
+      for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip
+      if tonumber(key) >= 3
+    ]
+  })
+}
+
+
+
+data "oxide_instance_external_ips" "load_balancer" {
+  instance_id = oxide_instance.load_balancer.id
+}
+
+
 
 output "talos_node_ips" {
   value = [for instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip]
 }
 
+output "hosts_ini" {
+  value = templatefile("${path.module}/hosts.ini.tpl", {
+    loadbalancer_ip = data.oxide_instance_external_ips.load_balancer.external_ips[0].ip,
+    control_plane_ips = [
+      for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip
+      if tonumber(key) < 3
+    ],
+    worker_ips = [
+      for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip
+      if tonumber(key) >= 3
+    ]
+  })
+}
 
