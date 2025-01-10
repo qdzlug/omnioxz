@@ -29,6 +29,15 @@ This repository contains the following components:
 - **`ansible/`**: Directory containing Ansible playbook for NGINX setup.
 - **`README.md`**: This documentation file.
 
+## Talos Install Media
+```
+customization:
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/iscsi-tools
+      - siderolabs/util-linux-tools``
+```
+
 ## Quickstart Guide
 Follow these steps to deploy Kubernetes on Talos Linux using Omni and Oxide:
 

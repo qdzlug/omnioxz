@@ -1,9 +1,9 @@
 kind: Cluster
-name: my-cluster
+name: ${cluster_name}
 kubernetes:
-  version: v1.27.0
+  version: ${kubernetes_version}
 talos:
-  version: v1.5.2
+  version: ${talos_version}
 ---
 kind: ControlPlane
 machines:

@@ -55,7 +55,7 @@ resource "oxide_disk" "compute_disks" {
 }
 
 resource "oxide_instance" "compute" {
-  for_each = { for i in range(var.instance_count) : i => "instance-${var.instance_prefix}-${i + 1}" }
+  for_each = { for i in range(var.instance_count) : i => "${var.instance_prefix}-${i + 1}" }
 
   project_id       = data.oxide_project.talos.id
   boot_disk_id     = oxide_disk.compute_disks[each.key].id
@@ -216,16 +216,19 @@ resource "local_file" "nginx_conf" {
 resource "local_file" "cluster_yaml" {
   filename = "${path.root}/../talos/cluster.yaml"
   content  = templatefile("${path.root}/templates/cluster.yaml.tpl", {
+    cluster_name        = var.cluster_name,
+    kubernetes_version  = var.kubernetes_version,
+    talos_version       = var.talos_version,
     control_plane_uuids = [
-      for instance_id, instance in oxide_instance.compute : instance.id
-      if tonumber(instance_id) < 3
+      for key, instance in data.oxide_instance_external_ips.talos : instance.id
+      if tonumber(key) < 3
     ],
     worker_uuids = [
-      for instance_id, instance in oxide_instance.compute : instance.id
-      if tonumber(instance_id) >= 3
+      for key, instance in data.oxide_instance_external_ips.talos : instance.id
+      if tonumber(key) >= 3
     ],
     all_machine_uuids = [
-      for instance in oxide_instance.compute : instance.id
+      for instance in data.oxide_instance_external_ips.talos : instance.id
     ]
   })
 }
@@ -278,4 +281,3 @@ output "cluster_yaml" {
     ]
   })
 }
-
