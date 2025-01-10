@@ -203,7 +203,15 @@ data "oxide_instance_external_ips" "load_balancer" {
   instance_id = oxide_instance.load_balancer.id
 }
 
-
+resource "local_file" "nginx_conf" {
+  filename = "${path.module}/nginx.conf"
+  content  = templatefile("${path.module}/nginx.conf.tpl", {
+    control_plane_ips = [
+      for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips[0].ip
+      if tonumber(key) < 3
+    ]
+  })
+}
 
 output "talos_node_ips" {
   value = [for instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip]
@@ -219,6 +227,16 @@ output "hosts_ini" {
     worker_ips = [
       for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip
       if tonumber(key) >= 3
+    ]
+  })
+}
+
+output "nginx_conf" {
+  description = "Rendered NGINX configuration file with dynamic control plane IPs"
+  value = templatefile("${path.module}/nginx.conf.tpl", {
+    control_plane_ips = [
+      for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips[0].ip
+      if tonumber(key) < 3
     ]
   })
 }
