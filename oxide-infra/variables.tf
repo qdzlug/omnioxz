@@ -96,3 +96,22 @@ variable "talos_floating_ip" {
   description = "Pre-created Floating IP to attach to the load balancer instance"
   type        = string
 }
+
+variable "cluster_name" {
+  description = "The name of the Kubernetes cluster."
+  type        = string
+  default     = "my-cluster"
+}
+
+variable "kubernetes_version" {
+  description = "The version of Kubernetes to deploy."
+  type        = string
+  default     = "v1.30.5"
+}
+
+variable "talos_version" {
+  description = "The version of Talos to deploy."
+  type        = string
+  default     = "v1.7.6"
+}
+

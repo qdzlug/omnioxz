@@ -183,8 +183,8 @@ resource "oxide_vpc_firewall_rules" "load_balancer" {
 
 
 resource "local_file" "hosts_ini" {
-  filename = "${path.module}/hosts.ini"
-  content  = templatefile("${path.module}/hosts.ini.tpl", {
+  filename = "${path.root}/../ansible/hosts.ini"
+  content  = templatefile("${path.root}/templates/hosts.ini.tpl", {
     loadbalancer_ip   = data.oxide_instance_external_ips.load_balancer.external_ips[0].ip,
     control_plane_ips = [
       for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip
@@ -204,8 +204,8 @@ data "oxide_instance_external_ips" "load_balancer" {
 }
 
 resource "local_file" "nginx_conf" {
-  filename = "${path.module}/nginx.conf"
-  content  = templatefile("${path.module}/nginx.conf.tpl", {
+  filename = "${path.root}/../ansible/files/nginx.conf"
+  content  = templatefile("${path.root}/templates/nginx.conf.tpl", {
     control_plane_ips = [
       for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips[0].ip
       if tonumber(key) < 3
@@ -213,12 +213,30 @@ resource "local_file" "nginx_conf" {
   })
 }
 
+resource "local_file" "cluster_yaml" {
+  filename = "${path.root}/../talos/cluster.yaml"
+  content  = templatefile("${path.root}/templates/cluster.yaml.tpl", {
+    control_plane_uuids = [
+      for instance_id, instance in oxide_instance.compute : instance.id
+      if tonumber(instance_id) < 3
+    ],
+    worker_uuids = [
+      for instance_id, instance in oxide_instance.compute : instance.id
+      if tonumber(instance_id) >= 3
+    ],
+    all_machine_uuids = [
+      for instance in oxide_instance.compute : instance.id
+    ]
+  })
+}
+
+
 output "talos_node_ips" {
   value = [for instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip]
 }
 
 output "hosts_ini" {
-  value = templatefile("${path.module}/hosts.ini.tpl", {
+  value = templatefile("${path.root}/templates/hosts.ini.tpl", {
     loadbalancer_ip = data.oxide_instance_external_ips.load_balancer.external_ips[0].ip,
     control_plane_ips = [
       for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips.0.ip
@@ -233,10 +251,30 @@ output "hosts_ini" {
 
 output "nginx_conf" {
   description = "Rendered NGINX configuration file with dynamic control plane IPs"
-  value = templatefile("${path.module}/nginx.conf.tpl", {
+  value = templatefile("${path.root}/templates/nginx.conf.tpl", {
     control_plane_ips = [
       for key, instance in data.oxide_instance_external_ips.talos : instance.external_ips[0].ip
       if tonumber(key) < 3
+    ]
+  })
+}
+
+output "cluster_yaml" {
+  description = "Rendered cluster.yaml for Kubernetes cluster creation"
+  value = templatefile("${path.root}/templates/cluster.yaml.tpl", {
+    cluster_name        = var.cluster_name,
+    kubernetes_version  = var.kubernetes_version,
+    talos_version       = var.talos_version,
+    control_plane_uuids = [
+      for key, instance in data.oxide_instance_external_ips.talos : instance.id
+      if tonumber(key) < 3
+    ],
+    worker_uuids = [
+      for key, instance in data.oxide_instance_external_ips.talos : instance.id
+      if tonumber(key) >= 3
+    ],
+    all_machine_uuids = [
+      for instance in data.oxide_instance_external_ips.talos : instance.id
     ]
   })
 }
