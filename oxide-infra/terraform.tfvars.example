@@ -1,0 +1,16 @@
+instance_count    = 6
+instance_prefix   = "talos-"
+project_name      = "my-project"
+boot_image_id     = "0c4c74dd-c24e-4cc9-b745-4dfc0ab90de6"
+public_ssh_key    = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFRtwMP9Vjdyv2SaVebA6NehbSr53Dc1sT8a/rVIoBRR jschmidt@sentinel.virington.com"
+disk_size         = 137438953472
+memory            = 8589934592
+ncpus             = 4
+vpc_name          = "talos-vpc"
+vpc_dns_name      = "example.com"
+vpc_description   = "Talos VPC"
+lb_instance_name  = "talos-lb"
+lb_image_id       = "your-ubuntu-image-id"
+lb_memory         = 4294967296
+lb_ncpus          = 2
+lb_disk_size      = 17179869184

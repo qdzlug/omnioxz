@@ -1,0 +1,22 @@
+---
+- name: Set up NGINX load balancer
+  hosts: loadbalancer
+  become: true
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: nginx
+        state: present
+
+    - name: Copy NGINX configuration
+      copy:
+        src: files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Restart NGINX service
+      service:
+        name: nginx
+        state: restarted
